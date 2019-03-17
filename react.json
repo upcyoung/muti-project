@@ -1,0 +1,26 @@
+{
+  "version": 1.0,
+  "projects": {
+    "warehouse-app": {
+      "name": "warehouse",
+      "path": ".",
+      "publicPath": "",
+      "index": "public/index.html",
+      "main": "src/index.js"
+    },
+    "app1": {
+      "name": "app1",
+      "path": "app1",
+      "publicPath": "app1/",
+      "index": "public/index.html",
+      "main": "src/app1/index.js"
+    },
+    "app2": {
+      "name": "app2",
+      "path": "app2",
+      "publicPath": "app2/",
+      "index": "public/index.html",
+      "main": "src/app2/index.js"
+    }
+  }
+}
