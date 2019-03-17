@@ -40,6 +40,7 @@ for(let key in bpObj){
 
 function setAppConfig(config, app) {
   config.entry[config.entry.length - 1] = path.join(paths.appPath, app.main);
+  paths.appIndexJs = path.join(paths.appPath, app.main);
   if(app.path){
     config.output.path = path.join(paths.appBuild, app.path);
   }
