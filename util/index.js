@@ -2,11 +2,14 @@ const path = require('path');
 const chalk = require('react-dev-utils/chalk');
 const { paths } = require('react-app-rewired');
 const configFactory = require(paths.scriptVersion + '/config/webpack.config');
+const { NormalModuleReplacementPlugin } = require('webpack');
 const createDevServerConfig = require(paths.scriptVersion + '/config/webpackDevServer.config');
 const override = require('../config-overrides');
+const { run } = require('./try-value');
+const { isReplacement, isArray } = require('./is');
 
 
-let packageJson = require(path.join(paths.appPath,'react.json'));
+let packageJson = require(resolveApp('react.json'));
 
 let apps = packageJson.projects;
 
@@ -19,14 +22,14 @@ argvs.some(arg => {
       console.log(chalk.yellow(`${currentStr} is not in apps`));
       process.exit(1);
     } else {
-      currentApp = {currentStr:apps[currentStr]};
+      currentApp = { currentStr: apps[currentStr] };
       return true;
     }
   }
   return false;
 });
 
-const bpObj = currentApp?currentApp:apps;
+const bpObj = currentApp ? currentApp : apps;
 const buildApps = [];
 for(let key in bpObj){
   const config =configFactory(process.env.NODE_ENV);
@@ -39,14 +42,24 @@ for(let key in bpObj){
 
 
 function setAppConfig(config, app) {
-  config.entry[config.entry.length - 1] = path.join(paths.appPath, app.main);
-  paths.appIndexJs = path.join(paths.appPath, app.main);
-  if(app.path){
+  config.entry[config.entry.length - 1] = resolveApp(app.main);
+  paths.appIndexJs = resolveApp(app.main);
+  if (app.path) {
     config.output.path = path.join(paths.appBuild, app.path);
   }
-  if(app.publicPath&&process.env.NODE_ENV!=="development"){
+  if (app.publicPath && process.env.NODE_ENV !== "development") {
     config.output.publicPath = `${app.publicPath}/`;
   }
+  const replacements = run(app, `${process.env.NODE_ENV}.fileReplacements`);
+  if (isArray(replacements)) {
+    const replacementPlugins = replacements.filter(isReplacement)
+      .map(r => new NormalModuleReplacementPlugin(RegExp(r['from']), resolveApp(r['with'])));
+    config.plugins.unshift(...replacementPlugins);
+  }
+}
+
+function resolveApp(name, relative=null) {
+  return path.join(relative || paths.appPath, name);
 }
 
 
