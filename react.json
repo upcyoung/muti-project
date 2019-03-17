@@ -6,7 +6,23 @@
       "path": ".",
       "publicPath": "",
       "index": "public/index.html",
-      "main": "src/index.js"
+      "main": "src/index.js",
+      "development": {
+        "fileReplacements": [
+          {
+            "from": "src/environments/environment.js",
+            "with": "src/environments/environment.stage.js"
+          }
+        ]
+      },
+      "production": {
+        "fileReplacements": [
+          {
+            "from": "src/environments/environment.js",
+            "with": "src/environments/environment.prod.js"
+          }
+        ]
+      }
     },
     "app1": {
       "name": "app1",
